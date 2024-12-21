@@ -36,7 +36,7 @@ class SellController extends Controller {
 
         // Respuesta de éxito
         return response()->json([
-                    'message' => 'Product created successfully',
+                    'message' => 'Sale created successfully',
                     'data' => new SellResource($sell)
                         ], 201);
     }
