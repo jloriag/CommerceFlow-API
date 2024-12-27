@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\AuthController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
+Route::get('/sells', [SellsController::class, 'index']);
+
 Route::apiResource('products',ProductController::class);
 
 Route::apiResource('sells',SellController::class);
