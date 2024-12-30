@@ -18,12 +18,6 @@ RUN a2enmod rewrite
 # Configurar Apache para que escuche en el puerto 80
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# Copiar un archivo PHP básico para probar el servidor
-RUN echo "<?php phpinfo(); ?>" > /var/www/html/index.php
-
-# Configurar MySQL (script de inicialización)
-COPY mysql-init.sql /docker-entrypoint-initdb.d/
-
 WORKDIR /var/www/html/
 
 RUN mkdir laravel-api
@@ -37,8 +31,6 @@ RUN composer update
 RUN composer install
 
 COPY .env /var/www/html/laravel-api
-
-#RUN php artisan migrate --force
 
 # Exponer los puertos necesarios (cambia el puerto de Apache y MySQL)
 EXPOSE 8081 3307
