@@ -24,6 +24,7 @@ RUN mkdir laravel-api
 
 WORKDIR /var/www/html/laravel-api
 
+ARG CACHE_BUSTER=1
 RUN git clone https://github.com/jloriag/CommerceFlow-API.git .
 
 RUN composer update
@@ -31,6 +32,10 @@ RUN composer update
 RUN composer install
 
 COPY .env /var/www/html/laravel-api
+
+RUN chmod -R 775 storage bootstrap/cache
+
+RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Exponer los puertos necesarios (cambia el puerto de Apache y MySQL)
 EXPOSE 8081 3307
