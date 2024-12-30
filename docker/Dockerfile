@@ -1,54 +1,47 @@
-FROM bitnami/apache:latest
+# Usar la última versión de Ubuntu como base
+FROM ubuntu:latest
 
-USER root
+# Establecer el entorno no interactivo para evitar prompts durante la instalación
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Crear el directorio necesario y luego instalar nano
-RUN mkdir -p /var/lib/apt/lists/partial && \
-    apt-get update && \
-    apt-get install -y nano && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Instalar PHP y módulos necesarios
-RUN install_packages \
-    php \
-    php-cli \
-    php-common \
-    libapache2-mod-php \
-    php-mysql \
-    php-curl \
-    php-json \
-    php-mbstring \
-    php-xml \
-    php-zip
-
-# Instalar curl
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-
+# Actualizar paquetes y agregar herramientas necesarias
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y apache2 mysql-server php libapache2-mod-php php-mysql php-curl php-xml curl unzip git && \
+    apt-get clean
 
 # Descargar e instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Habilitar el módulo de reescritura de Apache
+RUN a2enmod rewrite
 
-# Establece el directorio de trabajo
-WORKDIR /opt/bitnami/apache2/htdocs
+# Configurar Apache para que escuche en el puerto 80
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-RUN mkdir laravel11-app 
+# Copiar un archivo PHP básico para probar el servidor
+RUN echo "<?php phpinfo(); ?>" > /var/www/html/index.php
 
-# Copia los archivos de tu proyecto al contenedor (opcional)
-COPY ../ /opt/bitnami/apache2/htdocs/laravel11-app
+# Configurar MySQL (script de inicialización)
+COPY mysql-init.sql /docker-entrypoint-initdb.d/
 
-# Establece el directorio de trabajo
-WORKDIR /opt/bitnami/apache2/htdocs/laravel11-app
+WORKDIR /var/www/html/
 
-# Ajusta los permisos del directorio
-RUN chmod -R 775 /opt/bitnami/apache2/htdocs && \
-    chown -R daemon:daemon /opt/bitnami/apache2/htdocs
+RUN mkdir laravel-api
+
+WORKDIR /var/www/html/laravel-api
+
+RUN git clone https://github.com/jloriag/CommerceFlow-API.git .
 
 RUN composer update
 
-# Exponer el puerto 8081 ( para la imagen de Bitnami Apache)
-EXPOSE 8081
+RUN composer install
 
-# Reiniciar Apache
-RUN /opt/bitnami/scripts/apache/stop.sh && /opt/bitnami/scripts/apache/start.sh
+COPY .env /var/www/html/laravel-api
+
+#RUN php artisan migrate --force
+
+# Exponer los puertos necesarios (cambia el puerto de Apache y MySQL)
+EXPOSE 8081 3307
+
+# Comando para iniciar Apache y MySQL al iniciar el contenedor
+CMD service mysql start && apachectl -D FOREGROUND
