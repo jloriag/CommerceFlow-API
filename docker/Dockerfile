@@ -36,6 +36,8 @@ RUN chmod -R 775 storage bootstrap/cache
 
 RUN chown -R www-data:www-data storage bootstrap/cache
 
+RUN chmod -R 775 storage
+
 # Exponer los puertos necesarios (cambia el puerto de Apache y MySQL)
 EXPOSE 8081 3307
 
