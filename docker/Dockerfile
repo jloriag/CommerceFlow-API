@@ -24,7 +24,6 @@ RUN mkdir laravel-api
 
 WORKDIR /var/www/html/laravel-api
 
-ARG CACHE_BUSTER=1
 RUN git clone https://github.com/jloriag/CommerceFlow-API.git .
 
 RUN composer update
