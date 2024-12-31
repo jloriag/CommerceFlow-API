@@ -2,6 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
+Route::match(['GET', 'HEAD'], '/', function () {
     return view('welcome');
 });
