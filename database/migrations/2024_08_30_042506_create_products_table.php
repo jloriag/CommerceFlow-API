@@ -22,7 +22,6 @@ return new class extends Migration
             $table->integer("amount");
             $table->string('sku');
             $table->foreign("state_id")->references('id')->on('states')->onDelete('cascade');
-            $table->string('url')->unique();
         });
     }
 
@@ -31,10 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->dropUnique(['url']); // Elimina la restricción única
-            $table->dropColumn('url'); // Elimina la columna
-        });
         Schema::dropIfExists('products');
         
     }

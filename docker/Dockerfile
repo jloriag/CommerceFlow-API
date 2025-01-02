@@ -26,9 +26,9 @@ WORKDIR /var/www/html/laravel-api
 
 RUN git clone https://github.com/jloriag/CommerceFlow-API.git .
 
-RUN composer update
-
 RUN composer install
+
+RUN composer update
 
 COPY .env /var/www/html/laravel-api
 
